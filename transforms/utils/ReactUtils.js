@@ -39,6 +39,7 @@ module.exports = function(j) {
       .size() === 1;
 
   const hasReact = path => (
+    hasModule(path, 'devtools/client/shared/vendor/react') ||
     hasModule(path, 'React') ||
     hasModule(path, 'react') ||
     hasModule(path, 'react/addons') ||

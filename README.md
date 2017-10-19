@@ -18,7 +18,9 @@ It is a fork of reactjs/react-codemod but with transforms specifically designed 
 
 #### `mozclass`
 
-A version of the "new ES2015 class transform with property initializers" that you can see below that has been specifically adapted to run on Mozilla's codebase... the output runs in browser without any transpiling.
+Converts React's createClass() "classes" into fully fledged ES6 classes.
+
+A version of the "new ES2015 class transform with property initializers" that you can see below. This version has been specifically adapted to run on Mozilla's codebase... the output runs in browser without any transpiling.
 
 Key differences between the two versions:
 
