@@ -24,7 +24,7 @@ A version of the "new ES2015 class transform with property initializers" that yo
 
 Key differences between the two versions:
 
-- class.js turns all custom methods into ES6 class arror functions:
+- class.js turns all custom methods into ES6 class arrow functions:
 
   ```js
   someClassMethod = () => {
