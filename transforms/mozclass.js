@@ -464,6 +464,12 @@ module.exports = (file, api, options) => {
         .forEach((node) => {
           let props = node.value.id.properties;
 
+          if (!props) {
+            // Must be a direct import e.g.
+            // `const React = require(...)`
+            return;
+          }
+
           props.forEach((prop) => {
             if (prop.key.name === oldName) {
               prop.key.name = newName;
