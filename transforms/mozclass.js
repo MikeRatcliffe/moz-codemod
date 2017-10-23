@@ -551,6 +551,82 @@ module.exports = (file, api, options) => {
     })
   };
 
+  let usePureComponent = false;
+  const prepForPureComponent = path => {
+    return path
+      .find(j.CallExpression, {
+        callee: {
+          object: {
+            name: "React"
+          },
+          property: {
+            name: "createClass"
+          }
+        }
+      })
+      .forEach(path => {
+        let node = path.node;
+        let props = node.arguments[0].properties;
+        let mixinProp = null;
+        let idx = 0;
+
+        for (let i = 0; i < props.length; i++) {
+          let p = props[i];
+          if (p.key.name === "mixins") {
+            idx = i;
+            mixinProp = p;
+          }
+        }
+
+        if (!mixinProp) {
+          return;
+        }
+
+        let mixins = mixinProp.value.elements;
+
+        if (mixins.length === 1 && mixins[0].property.name === "PureRenderMixin") {
+          let mixin = mixins[0];
+          let varName = mixin.object.name || mixin.object.property.name;
+
+          // Remove mixin property
+          props.splice(idx, 1);
+
+          // Now we know we need to use PureComponent
+          usePureComponent = true;
+
+          let componentScope = j(path.parentPath.parentPath.parentPath.parentPath);
+
+          let occurances = componentScope.find(j.Identifier, { name: varName });
+
+          // The addons module name can only be used twice:
+          // Once in the require and once in the mixin array.
+          // If it is used more than this we remove it.
+          if (occurances.paths().length === 2) {
+            componentScope
+              .findVariableDeclarators()
+              .filter(
+                j.filters.VariableDeclarator.requiresModule("devtools/client/shared/vendor/react")
+              )
+              .forEach(node => {
+                let props = node.value.id.properties;
+
+                if (!props) {
+                  return;
+                }
+
+                for (let i = 0; i < props.length; i++) {
+                  let prop = props[i];
+                  if (prop.key.name === varName) {
+                    props.splice(i, 1);
+                    break;
+                  }
+                }
+              });
+          }
+        }
+      });
+  };
+
   const createMethodDefinition = fn =>
     withComments(j.methodDefinition(
       'method',
@@ -1201,8 +1277,9 @@ module.exports = (file, api, options) => {
     }
 
     const baseClassName =
-      pureRenderMixinPathAndBinding &&
-      ReactUtils.directlyHasSpecificMixins(classPath, [pureRenderMixinPathAndBinding.binding]) ?
+      usePureComponent ||
+      (pureRenderMixinPathAndBinding &&
+      ReactUtils.directlyHasSpecificMixins(classPath, [pureRenderMixinPathAndBinding.binding])) ?
         'PureComponent' :
         'Component';
 
@@ -1326,6 +1403,8 @@ module.exports = (file, api, options) => {
     prefixCreateClass(root);
 
     fixModuleExport(root);
+
+    prepForPureComponent(root);
 
     // no mixins found on the classPath -> true
     // pure mixin identifier not found -> (has mixins) -> false
