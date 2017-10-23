@@ -44,12 +44,19 @@ Key differences between the two versions:
   static displayName = "MyComponent"
   ```
 
-  mozclass adds them after the class body:
+  mozclass can add them inside the class body as static getters (default):
+
+  ```
+  static get displayName() {
+    return "MyComponent"
+  }
+  ```
+  Or after the class body (--no-static-getters):
 
   ```js
   MyComponent.displayName = "MyComponent"
   ```
-  
+
 ##### Usage
 
 All you normally need is:
@@ -61,7 +68,7 @@ jscodeshift -t ./transforms/mozclass.js <path>
 But feel free to include options see "ES2015 class transform with property initializers" for an explaination:
 
 ```bash
-jscodeshift -t ./transforms/mozclass.js --mixin-module-name=react-addons-pure-render-mixin --flow=true --pure-component=true --remove-runtime-proptypes=false <path>
+jscodeshift -t ./transforms/mozclass.js --mixin-module-name=react-addons-pure-render-mixin --flow=true --pure-component=true --no-static-getters --remove-runtime-proptypes=false <path>
 ```
 
 ### Included Standard Scripts

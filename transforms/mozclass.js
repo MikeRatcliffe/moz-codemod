@@ -80,6 +80,8 @@ module.exports = (file, api, options) => {
   const MIXIN_KEY = 'mixins';
 
   const NO_CONVERSION = options.conversion === false;
+  const STATIC_GETTERS = typeof options['static-getters'] === "undefined" ||
+                         options['static-getters'] === true
 
   const NO_DISPLAY_NAME = options['display-name'] === false;
 
@@ -379,8 +381,7 @@ module.exports = (file, api, options) => {
       }
     }
 
-    // Lets preserve the order we had defined these methods in.
-    return result.reverse();
+    return result;
   };
 
   const collectNonStaticProperties = specPath => specPath.properties
@@ -1032,19 +1033,37 @@ module.exports = (file, api, options) => {
       ) :
       [];
 
-    let finalStaticProperties = staticProperties;
-
     if (shouldTransformFlow && options['remove-runtime-proptypes']) {
       finalStaticProperties = staticProperties.filter((prop) => prop.key.name !== 'propTypes');
     }
+
+    staticProperties = staticProperties.filter(x => x).map(p => {
+      return withComments(
+        j.methodDefinition(
+          "get",
+          j.identifier(p.key.name),
+          j.functionExpression(
+            null,
+            [],
+            j.blockStatement([
+              j.returnStatement(p.value)
+            ])
+          ),
+          true
+        ),
+        p
+      );
+    });
+
+    let finalStaticProperties = staticProperties;
 
     return withComments(j.classDeclaration(
       name ? j.identifier(name) : null,
       j.classBody(
         [].concat(
+          finalStaticProperties,
           flowPropsAnnotation,
           maybeFlowStateAnnotation,
-          finalStaticProperties,
           maybeConstructor,
           repositionStateProperty(initialStateProperty, propertiesAndMethods)
         )
@@ -1119,37 +1138,39 @@ module.exports = (file, api, options) => {
       createESClass(
         name,
         baseClassName,
-        [], // staticProperties,
+        STATIC_GETTERS ? statics : [],
         getInitialState,
         properties,
         comments
       ),
     ]);
 
-    statics.filter(x => x).map(p => {
-      let x = path;
+    if (!STATIC_GETTERS) {
+      statics.reverse().filter(x => x).map(p => {
+        let x = path;
 
-      if (x.parentPath && x.parentPath.value.type == 'ExportNamedDeclaration') {
-        x = x.parentPath;
-      }
+        if (x.parentPath && x.parentPath.value.type == 'ExportNamedDeclaration') {
+          x = x.parentPath;
+        }
 
-      j(x).insertAfter(
-        withComments(
-          j.expressionStatement(
-            j.assignmentExpression(
-              '=',
-              j.memberExpression(
-                j.identifier(name),
-                j.identifier(p.key.name),
-                false
-              ),
-              p.value,
-            )
-          ),
-          p
-        )
-      );
-    });
+        j(x).insertAfter(
+          withComments(
+            j.expressionStatement(
+              j.assignmentExpression(
+                '=',
+                j.memberExpression(
+                  j.identifier(name),
+                  j.identifier(p.key.name),
+                  false
+                ),
+                p.value,
+              )
+            ),
+            p
+          )
+        );
+      });
+    }
   };
 
   const addDisplayName = (displayName, specPath) => {
