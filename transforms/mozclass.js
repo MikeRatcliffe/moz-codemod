@@ -166,6 +166,18 @@ module.exports = (file, api, options) => {
     )
   );
 
+  const getComponentNameFromArgs = args => {
+    for (let n of args) {
+      for (let prop of n.properties) {
+        if (prop.key.name === "displayName") {
+          return prop.value.value;
+        }
+      }
+    }
+
+    return "";
+  }
+
   // ---------------------------------------------------------------------------
   // Checks if the module uses mixins or accesses deprecated APIs.
   const checkDeprecatedAPICalls = classPath =>
@@ -436,11 +448,9 @@ module.exports = (file, api, options) => {
 
   // ---------------------------------------------------------------------------
   // Boom!
-  const prefixCreateClass = (path) => {
+  const prefixCreateClass = path => {
     path.find(j.CallExpression, {
-      type: 'CallExpression',
       callee: {
-        type: 'Identifier',
         name: 'createClass',
       },
     })
@@ -477,6 +487,68 @@ module.exports = (file, api, options) => {
             }
           });
         });
+  };
+
+  /**
+   * The pattern `module.exports = React.createClass() { ... }` breaks things when it comes
+   * to adding static properties to the class. This method changes this pattern to
+   * ```
+   * const <displayName> = React.createClass() {
+   *   ...
+   * }
+   *
+   * module.exports = <displayName>
+   * ```
+   */
+  const fixModuleExport = path => {
+    return path.find(j.ExpressionStatement, {
+      expression: {
+        left: {
+          object: {
+            name: "module"
+          },
+          property: {
+            name: "exports"
+          }
+        },
+        right: {
+            callee: {
+              object: {
+                name: "React"
+              },
+              property: {
+                name: "createClass"
+              }
+            }
+        }
+      }
+    })
+    .replaceWith(({ node }) => {
+      let displayName = getComponentNameFromArgs(node.expression.right.arguments);
+
+      if (displayName) {
+        return j.variableDeclaration("const", [
+          j.variableDeclarator(j.identifier(displayName), node.expression.right)
+        ]);
+      }
+    })
+    .forEach(node => {
+      let displayName = getComponentNameFromArgs(node.value.declarations[0].init.arguments);
+
+      node.insertAfter(
+        j.expressionStatement(
+          j.assignmentExpression(
+            "=",
+            j.memberExpression(
+              j.identifier("module"),
+              j.identifier("exports"),
+              false
+            ),
+            j.identifier(displayName)
+          )
+        )
+      );
+    })
   };
 
   const createMethodDefinition = fn =>
@@ -1252,6 +1324,8 @@ module.exports = (file, api, options) => {
     // React.createClass. Without this small change we need to change
     // countless too many lines of code.
     prefixCreateClass(root);
+
+    fixModuleExport(root);
 
     // no mixins found on the classPath -> true
     // pure mixin identifier not found -> (has mixins) -> false
