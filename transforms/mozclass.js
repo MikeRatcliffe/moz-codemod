@@ -50,6 +50,7 @@ module.exports = (file, api, options) => {
   const DEFAULT_PROPS_FIELD = 'getDefaultProps';
   const DEFAULT_PROPS_KEY = 'defaultProps';
   const GET_INITIAL_STATE_FIELD = 'getInitialState';
+  const DISPLAY_NAME_FIELD = 'displayName';
 
   const DEPRECATED_APIS = [
     'getDOMNode',
@@ -67,6 +68,9 @@ module.exports = (file, api, options) => {
 
   const CREATE_CLASS_VARIABLE_NAME = options['create-class-variable-name'] ||
     'createReactClass';
+
+  const DISPLAY_NAME = typeof options['displayname'] === "undefined" ||
+                       options['displayname'];
 
   const STATIC_KEY = 'statics';
 
@@ -111,6 +115,9 @@ module.exports = (file, api, options) => {
 
   const filterGetInitialStateField = node =>
     createFindPropFn(GET_INITIAL_STATE_FIELD)(node);
+
+  const filterDisplayNameField = node =>
+    createFindPropFn(DISPLAY_NAME_FIELD)(node);
 
   const findGetInitialState = specPath =>
     specPath.properties.find(createFindPropFn(GET_INITIAL_STATE_FIELD));
@@ -384,7 +391,13 @@ module.exports = (file, api, options) => {
 
     for (let i = 0; i < specPath.properties.length; i++) {
       const property = specPath.properties[i];
-      if (createFindPropFn('statics')(property) && property.value && property.value.properties) {
+
+      if (!DISPLAY_NAME && property.key.name === 'displayName') {
+        continue;
+      }
+
+      if (createFindPropFn('statics')(property) &&
+          property.value && property.value.properties) {
         result.push(...property.value.properties);
       } else if (createFindPropFn(DEFAULT_PROPS_FIELD)(property)) {
         result.push(createDefaultProps(property));
@@ -398,9 +411,12 @@ module.exports = (file, api, options) => {
 
   const collectNonStaticProperties = specPath => specPath.properties
     .filter(prop =>
-      !(filterDefaultPropsField(prop) || filterGetInitialStateField(prop))
+      !(filterDefaultPropsField(prop) ||
+        filterDisplayNameField(prop) ||
+        filterGetInitialStateField(prop))
     )
-    .filter(prop => (!STATIC_KEYS.hasOwnProperty(prop.key.name)) && prop.key.name !== STATIC_KEY)
+    .filter(prop => (!STATIC_KEYS.hasOwnProperty(prop.key.name)) &&
+                     prop.key.name !== STATIC_KEY)
     .filter(prop =>
       isFunctionExpression(prop) ||
       isPrimPropertyWithTypeAnnotation(prop) ||
