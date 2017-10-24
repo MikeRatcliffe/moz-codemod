@@ -1391,12 +1391,6 @@ module.exports = (file, api, options) => {
   if (
     options['explicit-require'] === false || ReactUtils.hasReact(root)
   ) {
-    changeRequireProps(root,
-                       'devtools/client/shared/vendor/react',
-                       'createClass',
-                       'Component'
-    );
-
     // We greatly simplify life for ourselves by changing createClass to
     // React.createClass. Without this small change we need to change
     // countless too many lines of code.
@@ -1405,6 +1399,12 @@ module.exports = (file, api, options) => {
     fixModuleExport(root);
 
     prepForPureComponent(root);
+
+    changeRequireProps(root,
+      'devtools/client/shared/vendor/react',
+      'createClass',
+      usePureComponent ? 'PureComponent' : 'Component'
+);
 
     // no mixins found on the classPath -> true
     // pure mixin identifier not found -> (has mixins) -> false
