@@ -1420,7 +1420,7 @@ module.exports = (file, api, options) => {
       'devtools/client/shared/vendor/react',
       'createClass',
       usePureComponent ? 'PureComponent' : 'Component'
-);
+    );
 
     // no mixins found on the classPath -> true
     // pure mixin identifier not found -> (has mixins) -> false
@@ -1563,8 +1563,8 @@ module.exports = (file, api, options) => {
         }
       }
     }
+    return root.toSource(printOptions);
   }
-  return root.toSource(printOptions);
 };
 
 module.exports.parser = 'flow';
