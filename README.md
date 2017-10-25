@@ -68,7 +68,7 @@ jscodeshift -t ./transforms/mozclass.js <path>
 But feel free to include options see "ES2015 class transform with property initializers" for an explaination:
 
 ```bash
-jscodeshift -t ./transforms/mozclass.js --mixin-module-name=react-addons-pure-render-mixin --flow=true --pure-component=true --no-static-getters --no-displayname --remove-runtime-proptypes=false --ignore-pattern="test/" <path>
+jscodeshift -t ./transforms/mozclass.js --mixin-module-name=react-addons-pure-render-mixin --flow=true --pure-component=true --no-static-getters --no-displayname --remove-runtime-proptypes=false <path>
 ```
 
 ### Included Standard Scripts
