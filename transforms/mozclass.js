@@ -69,8 +69,7 @@ module.exports = (file, api, options) => {
   const CREATE_CLASS_VARIABLE_NAME = options['create-class-variable-name'] ||
     'createReactClass';
 
-  const DISPLAY_NAME = typeof options['displayname'] === "undefined" ||
-                       options['displayname'];
+  const ADD_DISPLAYNAME = !!options['add-displayname'];
 
   const STATIC_KEY = 'statics';
 
@@ -86,8 +85,6 @@ module.exports = (file, api, options) => {
   const NO_CONVERSION = options.conversion === false;
   const STATIC_GETTERS = typeof options['static-getters'] === "undefined" ||
                          options['static-getters'] === true
-
-  const NO_DISPLAY_NAME = options['display-name'] === false;
 
   let shouldTransformFlow = false;
 
@@ -392,7 +389,7 @@ module.exports = (file, api, options) => {
     for (let i = 0; i < specPath.properties.length; i++) {
       const property = specPath.properties[i];
 
-      if (!DISPLAY_NAME && property.key.name === 'displayName') {
+      if (!ADD_DISPLAYNAME && property.key.name === 'displayName') {
         continue;
       }
 
@@ -1359,7 +1356,7 @@ module.exports = (file, api, options) => {
     const comments = getComments(classPath);
     const specPath = ReactUtils.directlyGetCreateClassSpec(classPath);
 
-    if (!NO_DISPLAY_NAME) {
+    if (ADD_DISPLAYNAME) {
       if (specPath) {
         // Add a displayName property to the spec object
         let path = classPath;
