@@ -540,9 +540,12 @@ module.exports = (file, api, options) => {
       let displayName = getComponentNameFromArgs(node.expression.right.arguments);
 
       if (displayName) {
-        return j.variableDeclaration("const", [
-          j.variableDeclarator(j.identifier(displayName), node.expression.right)
-        ]);
+        return withComments(
+          j.variableDeclaration("const", [
+            j.variableDeclarator(j.identifier(displayName), node.expression.right)
+          ]),
+          node
+        );
       }
     })
     .forEach(node => {
