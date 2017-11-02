@@ -714,20 +714,30 @@ module.exports = (file, api, options) => {
           shouldInsertReturnAfterAssignment = true;
         }
 
-        j(path).replaceWith(j.expressionStatement(
-          j.assignmentExpression(
-            '=',
-            j.memberExpression(
-              j.thisExpression(),
-              j.identifier('state'),
-              false
+        j(path).replaceWith(
+          withComments(
+            j.expressionStatement(
+              j.assignmentExpression(
+                '=',
+                j.memberExpression(
+                  j.thisExpression(),
+                  j.identifier('state'),
+                  false
+                ),
+                path.value.argument
+              )
             ),
-            path.value.argument
+            path.value
           )
-        ));
+        );
 
         if (shouldInsertReturnAfterAssignment) {
-          j(path).insertAfter(j.returnStatement(null));
+          j(path).insertAfter(
+            withComment(
+              j.returnStatement(null),
+              path.value
+            )
+          );
         }
       }).getAST()[0].value.body.body;
   };
