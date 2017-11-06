@@ -26,8 +26,12 @@ module.exports = (file, api, options) => {
     objectCurlySpacing: true,
     quote: "double",
     range: false,
-    tabWidth: 4,
-    trailingComma: true,
+    tabWidth: 2,
+    trailingComma: {
+      objects: false,
+      arrays: false,
+      parameters: false
+    },
     useTabs: false,
     wrapColumn: 90,
   };
