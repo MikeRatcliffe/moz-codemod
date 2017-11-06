@@ -18,7 +18,7 @@ module.exports = function(file, api, options) {
   const destructuringEnabled = options.destructuring || false;
   const silenceWarnings = options.silenceWarnings || false;
   const printOptions = options.printOptions || {
-    quote: 'single',
+    quote: 'double',
     trailingComma: true,
   };
 

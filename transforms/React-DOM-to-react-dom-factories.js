@@ -187,6 +187,6 @@ module.exports = function(file, api, options) {
   hasModifications = replaceReactDOMReferences(j, root) || hasModifications;
 
   return hasModifications
-    ? root.toSource({ quote: 'single' })
+    ? root.toSource({ quote: 'double' })
     : null;
 };

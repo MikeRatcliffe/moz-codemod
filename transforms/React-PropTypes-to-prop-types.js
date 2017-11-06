@@ -290,6 +290,6 @@ module.exports = function(file, api, options) {
   }
 
   return hasModifications
-    ? root.toSource({ quote: 'single' })
+    ? root.toSource({ quote: 'double' })
     : null;
 };

@@ -19,7 +19,7 @@ module.exports = (file, api, options) => {
 
   const printOptions =
     options.printOptions || {
-      quote: 'single',
+      quote: 'double',
       trailingComma: true,
       flowObjectCommas: true,
       arrowParensAlways: true,

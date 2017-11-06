@@ -238,6 +238,6 @@ module.exports = function(file, api, options) {
   }
 
   return numMatchedPaths > 0
-    ? root.toSource({ quote: 'single' })
+    ? root.toSource({ quote: 'double' })
     : null;
 };

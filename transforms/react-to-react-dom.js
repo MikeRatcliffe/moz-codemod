@@ -394,5 +394,5 @@ module.exports = function(file, api) {
     }
   });
 
-  return root.toSource({quote: 'single'});
+  return root.toSource({quote: 'double'});
 };

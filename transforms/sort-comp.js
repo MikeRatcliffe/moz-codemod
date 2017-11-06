@@ -36,7 +36,10 @@ module.exports = function(fileInfo, api, options) {
   const ReactUtils = require('./utils/ReactUtils')(j);
 
   const printOptions =
-    options.printOptions || {quote: 'single', trailingComma: true};
+    options.printOptions || {
+      quote: 'double',
+      trailingComma: true
+    };
 
   const methodsOrder = getMethodsOrder(fileInfo, options); // eslint-disable-line no-use-before-define
 

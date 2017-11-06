@@ -16,7 +16,10 @@ function getDOMNodeToFindDOMNode(file, api, options) {
   const ReactUtils = require('./utils/ReactUtils')(j);
 
   const printOptions =
-    options.printOptions || {quote: 'single', trailingComma: true};
+    options.printOptions || {
+      quote: 'double',
+      trailingComma: true
+    };
   const root = j(file.source);
 
   const createReactFindDOMNodeCall = arg => j.callExpression(
