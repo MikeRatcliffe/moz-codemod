@@ -37,7 +37,9 @@ module.exports = (file, api, options) => {
     wrapColumn: 90,
   };
 
-  function removeDOMFactoryRequire(name) {
+  function removeRequire(name) {
+    let found = false;
+
     root
       .findVariableDeclarators()
       .filter(path => {
@@ -65,13 +67,17 @@ module.exports = (file, api, options) => {
               } else {
                 path.prune();
               }
+              found = true;
               break;
             }
           }
         } else if (path.value.id.name == name) {
           path.prune();
+          found = true;
         }
       });
+
+    return found;
   }
 
   function findRequire(requirePath) {
@@ -122,19 +128,13 @@ module.exports = (file, api, options) => {
     });
   }
 
-  let req = findRequire(REACT_PATH);
-
-  if (!req) {
+  if (!findRequire(REACT_PATH) || (!removeRequire("DOM") && !removeRequire("dom"))) {
     return;
   }
 
-  removeDOMFactoryRequire("DOM");
-  removeDOMFactoryRequire("dom");
-
   // There is a small possibility that the require path has been erased so we
   // need to get it again.
-  req = findRequire(REACT_PATH);
-
+  let req = findRequire(REACT_PATH);
   if (!req) {
     return;
   }
