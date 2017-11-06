@@ -14,7 +14,7 @@ It is a fork of reactjs/react-codemod but with transforms specifically designed 
    * use the `-d` option for a dry-run and use `-p` to print the output for comparison;
    * if you use flowtype, you might also need to use `--parser=flow`.
 
-### Included Mozilla Specific Scripts
+### Included Scripts
 
 #### `mozclass`
 
@@ -71,8 +71,6 @@ But feel free to include options see "ES2015 class transform with property initi
 jscodeshift -t ./transforms/mozclass.js --mixin-module-name=react-addons-pure-render-mixin --flow=true --pure-component=true --no-static-getters --add-displayname=true --remove-runtime-proptypes=false <path>
 ```
 
-### Included Standard Scripts
-
 #### Explanation of the new ES2015 class transform with property initializers
 1. Determine if mixins are convertible. We only transform a `createClass` call to an ES6 class component when:
   - There are no mixins on the class, or
@@ -112,132 +110,6 @@ jscodeshift -t ./transforms/mozclass.js --mixin-module-name=react-addons-pure-re
   - Replaces `React.createClass` with `ReactCreateClass`.
   - Adds a `require` or `import` statement for `create-react-class`. The import style is inferred from the import style of the `react` import. The default module name can be overridden with the `--create-class-module-name` option.
   - Prunes the `react` import if there are no more references to it.
-
-#### Usage
-```bash
-jscodeshift -t ./transforms/class.js --mixin-module-name=react-addons-pure-render-mixin --flow=true --pure-component=true --remove-runtime-proptypes=false <path>
-```
-
-#### `create-element-to-jsx`
-
-Converts calls to `React.createElement` into JSX elements.
-
-```sh
-jscodeshift -t react-codemod/transforms/create-element-to-jsx.js <path>
-```
-
-#### `error-boundaries`
-
-Renames the experimental `unstable_handleError` lifecycle hook to `componentDidCatch`.
-
-```sh
-jscodeshift -t react-codemod/transforms/error-boundaries.js <path>
-```
-
-#### `findDOMNode`
-
-Updates `this.getDOMNode()` or `this.refs.foo.getDOMNode()` calls inside of
-`React.createClass` components to `React.findDOMNode(foo)`. Note that it will
-only look at code inside of `React.createClass` calls and only update calls on
-the component instance or its refs. You can use this script to update most calls
-to `getDOMNode` and then manually go through the remaining calls.
-
-```sh
-jscodeshift -t react-codemod/transforms/findDOMNode.js <path>
-```
-
-#### `manual-bind-to-arrow`
-
-Converts manual function bindings in a class (e.g., `this.f = this.f.bind(this)`) to arrow property initializer functions (e.g., `f = () => {}`).
-
-```sh
-jscodeshift -t react-codemod/transforms/manual-bind-to-arrow.js <path>
-```
-
-#### `pure-component`
-
-Converts ES6 classes that only have a render method, only have safe properties
-(statics and props), and do not have refs to Stateless Functional Components.
-
-Option `useArrows` converts to arrow function. Converts to `function` by default.  
-Option `destructuring` will destructure props in the argument where it is safe to do so.  
-Note these options must be passed on the command line as `--useArrows=true` (`--useArrows` won't work)
-
-```sh
-jscodeshift -t react-codemod/transforms/pure-component.js <path> [--useArrows=true --destructuring=true]
-```
-
-#### `pure-render-mixin`
-
-Removes `PureRenderMixin` and inlines `shouldComponentUpdate` so that the ES2015
-class transform can pick up the React component and turn it into an ES2015
-class. NOTE: This currently only works if you are using the master version
-(>0.13.1) of React as it is using `React.addons.shallowCompare`
-
-```sh
-jscodeshift -t react-codemod/transforms/pure-render-mixin.js <path>
-```
-
- * If `--mixin-name=<name>` is specified it will look for the specified name
-   instead of `PureRenderMixin`. Note that it is not possible to use a
-   namespaced name for the mixin. `mixins: [React.addons.PureRenderMixin]` will
-   not currently work.
-
-#### `React-PropTypes-to-prop-types`
-
-Replaces `React.PropTypes` references with `prop-types` and adds the appropriate `import` or `require` statement. This codemod is intended for React 15.5+.
-
-```sh
-jscodeshift -t react-codemod/transforms/React-PropTypes-to-prop-types.js <path>
-```
-
-  * In addition to running the above codemod you will also need to install the 'prop-types' NPM package.
-
-#### `react-to-react-dom`
-
-Updates code for the split of the `react` and `react-dom` packages (e.g.,
-`React.render` to `ReactDOM.render`). It looks for `require('react')` and
-replaces the appropriate property accesses using `require('react-dom')`. It does
-not support ES6 modules or other non-CommonJS systems. We recommend performing
-the `findDOMNode` conversion first.
-
-```sh
-jscodeshift -t react-codemod/transforms/react-to-react-dom.js <path>
-```
-
-  * After running the automated codemod, you may want to run a regex-based
-    find-and-replace to remove extra whitespace between the added requires, such
-    as `codemod.py -m -d src --extensions js '(var
-    React\s*=\s*require\(.react.\);)\n\n(\s*var ReactDOM)' '\1\n\2'` using
-    https://github.com/facebook/codemod.
-
-#### `ReactNative-View-propTypes`
-
-Replaces `View.propTypes` references with `ViewPropTypes` and adds the appropriate `import` or `require` statement. This codemod is intended for ReactNative 44+.
-
-```sh
-jscodeshift -t react-codemod/transforms/ReactNative-View-propTypes.js <path>
-```
-
-#### `sort-comp`
-
-Reorders React component methods to match the [ESLint](http://eslint.org/)
-[react/sort-comp
-rule](https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/sort-comp.md). (Defaults to ordering of the [Airbnb style
-guide](https://github.com/airbnb/javascript/blob/7684892951ef663e1c4e62ad57d662e9b2748b9e/packages/eslint-config-airbnb/rules/react.js#L122-L134).
-
-```sh
-jscodeshift -t react-codemod/transforms/sort-comp.js <path>
-```
-
-### Recast Options
-
-Options to [recast](https://github.com/benjamn/recast)'s printer can be provided
-through the `printOptions` command line argument
-
-```sh
-jscodeshift -t transform.js <path> --printOptions='{"quote":"double"}'
-```
 
 ### Support and Contributing
 
