@@ -83,6 +83,18 @@ const { PropTypes } = require("devtools/client/shared/vendor/react");
 const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
 ```
 
+#### `mozdomfactories`
+
+Switches from old REACT.DOM builtin to the external dom factory module:
+
+```
+// Old Style
+const { div, span } = REACT.DOM;
+
+// New module
+const { div, span } = require("devtools/client/shared/vendor/react-dom-factories");
+```
+
 #### Explanation of the new ES2015 class transform with property initializers
 1. Determine if mixins are convertible. We only transform a `createClass` call to an ES6 class component when:
   - There are no mixins on the class, or
