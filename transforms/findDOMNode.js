@@ -13,7 +13,6 @@
 function getDOMNodeToFindDOMNode(file, api, options) {
   const j = api.jscodeshift;
 
-  require('./utils/array-polyfills');
   const ReactUtils = require('./utils/ReactUtils')(j);
 
   const printOptions =
