@@ -15,11 +15,19 @@ function removePureRenderMixin(file, api, options) {
 
   const ReactUtils = require('./utils/ReactUtils')(j);
 
-  const printOptions =
-    options.printOptions || {
-      quote: 'double',
-      trailingComma: true
-    };
+  const printOptions = options.printOptions || {
+    arrayBracketSpacing: true,
+    arrowParensAlways: false,
+    flowObjectCommas: true,
+    lineTerminator: '\n',
+    objectCurlySpacing: true,
+    quote: "double",
+    range: false,
+    tabWidth: 4,
+    trailingComma: true,
+    useTabs: false,
+    wrapColumn: 90,
+  };
   const root = j(file.source);
 
   const PURE_RENDER_MIXIN = options['mixin-name'] || 'PureRenderMixin';

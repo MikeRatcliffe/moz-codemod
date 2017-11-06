@@ -15,21 +15,19 @@ function getDOMNodeToFindDOMNode(file, api, options) {
 
   const ReactUtils = require('./utils/ReactUtils')(j);
 
-  const printOptions =
-    options.printOptions || {
-      quote: 'double',
-      trailingComma: true
-    };
-  const root = j(file.source);
-
-  const createReactFindDOMNodeCall = arg => j.callExpression(
-    j.memberExpression(
-      j.identifier('React'),
-      j.identifier('findDOMNode'),
-      false
-    ),
-    [arg]
-  );
+  const printOptions = options.printOptions || {
+    arrayBracketSpacing: true,
+    arrowParensAlways: false,
+    flowObjectCommas: true,
+    lineTerminator: '\n',
+    objectCurlySpacing: true,
+    quote: "double",
+    range: false,
+    tabWidth: 4,
+    trailingComma: true,
+    useTabs: false,
+    wrapColumn: 90,
+  };
 
   const updateRefCall = (path, refName) => {
     j(path)

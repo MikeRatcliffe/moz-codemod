@@ -20,12 +20,17 @@ module.exports = (file, api, options) => {
   const PROPTYPES_PATH = "devtools/client/shared/vendor/react-prop-types";
 
   const printOptions = options.printOptions || {
-    quote: "double",
-    trailingComma: true,
+    arrayBracketSpacing: true,
+    arrowParensAlways: false,
     flowObjectCommas: true,
-    arrowParensAlways: true,
-    arrayBracketSpacing: false,
-    objectCurlySpacing: false
+    lineTerminator: '\n',
+    objectCurlySpacing: true,
+    quote: "double",
+    range: false,
+    tabWidth: 4,
+    trailingComma: true,
+    useTabs: false,
+    wrapColumn: 90,
   };
 
   function removePropTypeRequire(name) {

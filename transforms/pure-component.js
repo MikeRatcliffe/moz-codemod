@@ -18,8 +18,17 @@ module.exports = function(file, api, options) {
   const destructuringEnabled = options.destructuring || false;
   const silenceWarnings = options.silenceWarnings || false;
   const printOptions = options.printOptions || {
-    quote: 'double',
+    arrayBracketSpacing: true,
+    arrowParensAlways: false,
+    flowObjectCommas: true,
+    lineTerminator: '\n',
+    objectCurlySpacing: true,
+    quote: "double",
+    range: false,
+    tabWidth: 4,
     trailingComma: true,
+    useTabs: false,
+    wrapColumn: 90,
   };
 
   const getClassName = path =>
