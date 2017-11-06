@@ -71,6 +71,18 @@ But feel free to include options see "ES2015 class transform with property initi
 jscodeshift -t ./transforms/mozclass.js --mixin-module-name=react-addons-pure-render-mixin --flow=true --pure-component=true --no-static-getters --add-displayname=true --remove-runtime-proptypes=false <path>
 ```
 
+#### `mozproptypes`
+
+Switches from old PropTypes module to the external PropTypes module:
+
+```
+// Old Module
+const { PropTypes } = require("devtools/client/shared/vendor/react");
+
+// New module
+const PropTypes = require("devtools/client/shared/vendor/react-prop-types");
+```
+
 #### Explanation of the new ES2015 class transform with property initializers
 1. Determine if mixins are convertible. We only transform a `createClass` call to an ES6 class component when:
   - There are no mixins on the class, or
