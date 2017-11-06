@@ -16,6 +16,7 @@ module.exports = (file, api, options) => {
   const j = api.jscodeshift;
 
   const ReactUtils = require('./utils/ReactUtils')(j);
+  const { describe } = require('jscodeshift-helper');
 
   const printOptions =
     options.printOptions || {
