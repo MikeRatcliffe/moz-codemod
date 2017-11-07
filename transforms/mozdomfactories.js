@@ -68,9 +68,9 @@ module.exports = (file, api, options) => {
         }
 
         if (path.value.id.name === name || (props && props.length === 1)) {
-                path.prune();
-              }
-              found = true;
+          path.prune();
+        }
+        found = true;
       });
 
     return found;
