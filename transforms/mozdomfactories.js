@@ -59,22 +59,18 @@ module.exports = (file, api, options) => {
         let props = path.value.id.properties;
 
         if (props) {
-          for (let i = 0; i < props.length; i++) {
-            let prop = props[i];
-            if (prop.key.name === name) {
-              if (props.length > 1) {
-                props = props.splice(i, 1);
-              } else {
+          props = props.filter(prop => {
+            return prop.key.name !== name;
+          }).map(prop => {
+            return prop.key.name;
+          });
+          path.value.id.properties = [props.join(", ")];
+        }
+
+        if (path.value.id.name === name || (props && props.length === 1)) {
                 path.prune();
               }
               found = true;
-              break;
-            }
-          }
-        } else if (path.value.id.name == name) {
-          path.prune();
-          found = true;
-        }
       });
 
     return found;
