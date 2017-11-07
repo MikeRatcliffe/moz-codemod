@@ -1,9 +1,9 @@
 {
-  "name": "react-codemod",
+  "name": "moz-codemod",
   "version": "4.0.0",
-  "description": "React codemod scripts",
+  "description": "Mozilla codemod scripts",
   "license": "BSD-3-Clause",
-  "repository": "reactjs/react-codemod",
+  "repository": "MikeRatcliffe/moz-codemod",
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
