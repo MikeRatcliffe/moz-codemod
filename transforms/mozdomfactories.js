@@ -113,18 +113,26 @@ module.exports = (file, api, options) => {
   }
 
   function replaceReactDotDom() {
+    let found = false;
+
     root.findVariableDeclarators().filter(path => {
       let init = path.value.init;
       if (init && init.type === "MemberExpression") {
         let { object, property } = init;
         if (object && property && (object.name === "React" && property.name === "DOM") ) {
           path.value.init = j.identifier("dom");
+          found = true;
         }
       }
     });
+
+    return found;
   }
 
-  if (!findRequire(REACT_PATH) || (!removeRequire("DOM") && !removeRequire("dom"))) {
+  if (!findRequire(REACT_PATH) ||
+      (!replaceReactDotDom() &&
+       !removeRequire("DOM") &&
+       !removeRequire("dom"))) {
     return;
   }
 
@@ -136,8 +144,6 @@ module.exports = (file, api, options) => {
   }
 
   insertRequireAfter(req, "dom", DOMFACTORY_PATH);
-
-  replaceReactDotDom();
 
   return root.toSource(printOptions);
 }
